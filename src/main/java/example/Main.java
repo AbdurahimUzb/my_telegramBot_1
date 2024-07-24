@@ -4,6 +4,7 @@ import example.namoz.App;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
@@ -42,6 +43,21 @@ class MyTelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdatesReceived(List<Update> updates) {
+        SendMessage sendMessage = new SendMessage();
+
+        for (Update update : updates) {
+            Message message = update.getMessage();
+            Long id = update.getMessage().getChat().getId();
+            String name = message.getChat().getFirstName();
+            sendMessage.setChatId(id);
+            sendMessage.setText(name + " : " + message.getText() + " deb yozdi 😊😊😊");
+
+            try {
+                execute(sendMessage);
+            } catch (TelegramApiException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override
@@ -56,7 +72,8 @@ class MyTelegramBot extends TelegramLongPollingBot {
 
     public void sendNamazTimes() throws TelegramApiException, IOException, InterruptedException {
         // Baxtliy oilani ID si -1001151862908
-        String chatID = "-1001151862908";
+        // Baxtliy Example ID si -1002186562582
+        String chatID = "-1002186562582";
         String namazTimes = getNamzTimes();
         SendMessage message = new SendMessage();
         message.setChatId(chatID);
